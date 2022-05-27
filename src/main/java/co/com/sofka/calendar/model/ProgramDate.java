@@ -19,4 +19,14 @@ public final class ProgramDate {
     public String getCategoryName() {
         return categoryName;
     }
+//  -------
+
+
+    @Override
+    public String toString() {
+        return "ProgramDate{" +
+                "categoryName='" + categoryName + '\'' +
+                ", date=" + date +
+                '}';
+    }
 }

@@ -40,12 +40,6 @@ public class SchedulerService {
                 .orElseThrow(() -> new RuntimeException("El programa academnico no existe"))
                 .map(toProgramDate(startDate, endDate, pivot[0], index))
                 .collect(Collectors.toList());
-
-//        return Optional.ofNullable(program)
-//                .map(this::getDurationOf)
-//                .orElseThrow(() -> new RuntimeException("El programa academnico no existe"))
-//                .map(toProgramDate(startDate, endDate, pivot[0], index))
-//                .collect(Collectors.toList());
     }
 
     public Flux<ProgramDate> generateCalendarFlux(String programId, LocalDate startDate) {
@@ -53,16 +47,29 @@ public class SchedulerService {
         final AtomicInteger[] pivot = {new AtomicInteger()};
         final int[] index = {0};
 
-        Mono<Program> mono = programRepository.findById(programId);
+        Mono<Program> program = programRepository.findById(programId);
 
-        return mono
-                .map(this::getDurationOf)
-                .switchIfEmpty(Mono.error(() -> new RuntimeException("El programa academico no existe")))
+        return program
+                .flatMapMany(mono-> Flux.fromStream(getDurationOf(mono)))
                 .map(stringStream -> {
                     Function<String, ProgramDate> stringProgramDateFunction = toProgramDate(startDate, endDate, pivot[0], index);
                     return stringProgramDateFunction.apply(String.valueOf(stringStream));
                 })
-                .flux();
+                .switchIfEmpty(Mono.error(new RuntimeException("El programa academico no existe")));
+
+
+//                .map(this::getDurationOf)
+//                .switchIfEmpty(Mono.error(() -> new RuntimeException("El programa academico no existe")))
+//                .map(stringStream -> {
+//                    Function<String, ProgramDate> stringProgramDateFunction = toProgramDate(startDate, endDate, pivot[0], index);
+//                    return stringProgramDateFunction.apply(String.valueOf(stringStream));
+//                })
+//                .flatMapMany(programDate -> )
+
+//                .flatMapMany(programDate ->);
+//                .map(programDate -> Flux.just(programDate))
+
+//        return null;
     }
 
     //No tocar
