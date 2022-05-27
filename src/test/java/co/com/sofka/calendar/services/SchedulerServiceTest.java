@@ -43,20 +43,14 @@ class SchedulerServiceTest {
         //TODO: hacer una subscripción de el servicio reactivo
         Flux<ProgramDate> response = schedulerService.generateCalendarFlux(programId, startDate);
 
-        response.subscribe(System.out::println);
-
-        StepVerifier.create(response)
+       StepVerifier.create(response)
                 .expectNextCount(13)
                 .verifyComplete();
 
         //TODO: hacer de otro modo
         StepVerifier.create(response)
-                .assertNext(p -> {
-                    System.out.println(p.getDate().toString());
-                    Assertions.assertEquals("Principios", p.getCategoryName());
-                })
-                .expectNextCount(12)
-                .verifyComplete();
+                .expectNextMatches(programDate ->new Gson().toJson(programDate).equalsIgnoreCase(getSnapResult()) )
+                .expectComplete();
 
 //
         Mockito.verify(repository).findById(programId);
