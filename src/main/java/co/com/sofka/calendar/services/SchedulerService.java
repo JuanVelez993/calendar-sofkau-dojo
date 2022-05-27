@@ -34,28 +34,44 @@ public class SchedulerService {
         //TODO: debe pasarlo a reactivo, no puede trabaja elementos bloqueantes
         //TODO: trabajar el map reactivo y no deben colectar
         var program = programRepository.findById(programId).block();
+
         return Optional.ofNullable(program)
                 .map(this::getDurationOf)
                 .orElseThrow(() -> new RuntimeException("El programa academnico no existe"))
                 .map(toProgramDate(startDate, endDate, pivot[0], index))
                 .collect(Collectors.toList());
+
+//        return Optional.ofNullable(program)
+//                .map(this::getDurationOf)
+//                .orElseThrow(() -> new RuntimeException("El programa academnico no existe"))
+//                .map(toProgramDate(startDate, endDate, pivot[0], index))
+//                .collect(Collectors.toList());
     }
 
-//    public Flux<ProgramDate> generateCalendarFlux(String programId, LocalDate startDate) {
-//        var endDate = new AtomicReference<>(LocalDate.from(startDate));
-//        final AtomicInteger[] pivot = {new AtomicInteger()};
-//        final int[] index = {0};
-//
-//        Mono<Program> mono = programRepository.findById(programId);
-//
-////         mono.switchIfEmpty(Mono.empty())
-//        mono.map(this::getDurationOf)
+    public Flux<ProgramDate> generateCalendarFlux(String programId, LocalDate startDate) {
+        var endDate = new AtomicReference<>(LocalDate.from(startDate));
+        final AtomicInteger[] pivot = {new AtomicInteger()};
+        final int[] index = {0};
+
+        Mono<Program> mono = programRepository.findById(programId);
+
+        var test = mono
+                .switchIfEmpty(Mono.empty())
+                .map(this::getDurationOf)
+                .map(stringStream -> {
+                    Function<String, ProgramDate> stringProgramDateFunction = toProgramDate(startDate, endDate, pivot[0], index);
+                    return stringProgramDateFunction.apply(String.valueOf(stringStream));
+                })
+                .flux();
+
+//                .map(toProgramDate(startDate, endDate, pivot[0], index))
+
 ////                .switchIfEmpty(Mono.empty())
 //                .map(toProgramDate(startDate, endDate, pivot[0], index))
+//                .switchIfEmpty(Mono.empty())
 //
-//        return null;
-//
-//    }
+        return null;
+    }
 
     //No tocar
     private Function<String, ProgramDate> toProgramDate(LocalDate startDate, AtomicReference<LocalDate> endDate, AtomicInteger atomicInteger, int[] index) {
