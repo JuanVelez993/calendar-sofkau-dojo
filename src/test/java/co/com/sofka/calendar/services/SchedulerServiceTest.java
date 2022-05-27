@@ -46,6 +46,13 @@ class SchedulerServiceTest {
                         .expectNextCount(13)
                                 .verifyComplete();
 
+    ///trying firts value
+        StepVerifier.create(response)
+                .expectNextMatches(programDate -> {
+                    return programDate.getDate().toString().equals("2022-01-03")
+                            && programDate.getCategoryName().equals("Principios");
+                });
+
         //Assertions.assertEquals(13, response.size());//TODO: hacer de otro modo
         Assertions.assertEquals(getSnapResult(), new Gson().toJson(response));//TODO: hacer de otro modo
         Mockito.verify(repository).findById(programId);
