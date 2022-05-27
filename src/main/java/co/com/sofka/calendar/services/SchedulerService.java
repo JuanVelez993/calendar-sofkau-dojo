@@ -5,6 +5,8 @@ import co.com.sofka.calendar.model.ProgramDate;
 import co.com.sofka.calendar.repositories.ProgramRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,6 +40,22 @@ public class SchedulerService {
                 .map(toProgramDate(startDate, endDate, pivot[0], index))
                 .collect(Collectors.toList());
     }
+
+//    public Flux<ProgramDate> generateCalendarFlux(String programId, LocalDate startDate) {
+//        var endDate = new AtomicReference<>(LocalDate.from(startDate));
+//        final AtomicInteger[] pivot = {new AtomicInteger()};
+//        final int[] index = {0};
+//
+//        Mono<Program> mono = programRepository.findById(programId);
+//
+////         mono.switchIfEmpty(Mono.empty())
+//        mono.map(this::getDurationOf)
+////                .switchIfEmpty(Mono.empty())
+//                .map(toProgramDate(startDate, endDate, pivot[0], index))
+//
+//        return null;
+//
+//    }
 
     //No tocar
     private Function<String, ProgramDate> toProgramDate(LocalDate startDate, AtomicReference<LocalDate> endDate, AtomicInteger atomicInteger, int[] index) {
