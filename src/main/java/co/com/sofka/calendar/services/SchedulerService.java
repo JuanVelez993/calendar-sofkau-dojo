@@ -50,26 +50,13 @@ public class SchedulerService {
         Mono<Program> program = programRepository.findById(programId);
 
         return program
-                .flatMapMany(mono-> Flux.fromStream(getDurationOf(mono)))
+                .flatMapMany(mono -> Flux.fromStream(getDurationOf(mono)))
                 .map(stringStream -> {
                     Function<String, ProgramDate> stringProgramDateFunction = toProgramDate(startDate, endDate, pivot[0], index);
                     return stringProgramDateFunction.apply(String.valueOf(stringStream));
                 })
                 .switchIfEmpty(Mono.error(new RuntimeException("El programa academico no existe")));
 
-
-//                .map(this::getDurationOf)
-//                .switchIfEmpty(Mono.error(() -> new RuntimeException("El programa academico no existe")))
-//                .map(stringStream -> {
-//                    Function<String, ProgramDate> stringProgramDateFunction = toProgramDate(startDate, endDate, pivot[0], index);
-//                    return stringProgramDateFunction.apply(String.valueOf(stringStream));
-//                })
-//                .flatMapMany(programDate -> )
-
-//                .flatMapMany(programDate ->);
-//                .map(programDate -> Flux.just(programDate))
-
-//        return null;
     }
 
     //No tocar
