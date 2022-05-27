@@ -55,22 +55,14 @@ public class SchedulerService {
 
         Mono<Program> mono = programRepository.findById(programId);
 
-        var test = mono
-                .switchIfEmpty(Mono.empty())
+        return mono
                 .map(this::getDurationOf)
+                .switchIfEmpty(Mono.error(() -> new RuntimeException("El programa academico no existe")))
                 .map(stringStream -> {
                     Function<String, ProgramDate> stringProgramDateFunction = toProgramDate(startDate, endDate, pivot[0], index);
                     return stringProgramDateFunction.apply(String.valueOf(stringStream));
                 })
                 .flux();
-
-//                .map(toProgramDate(startDate, endDate, pivot[0], index))
-
-////                .switchIfEmpty(Mono.empty())
-//                .map(toProgramDate(startDate, endDate, pivot[0], index))
-//                .switchIfEmpty(Mono.empty())
-//
-        return null;
     }
 
     //No tocar
